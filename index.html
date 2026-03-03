@@ -64,7 +64,10 @@
       <section class="card">
         <h3>Быстрый старт</h3>
         <p>1) Откройте Swagger. 2) Введите <code>city</code>, <code>street</code>, <code>house</code>. 3) Нажмите <code>Execute</code>.</p>
-        <pre><code>curl "https://power-six-lemon.vercel.app/api/power?city=%D0%92%D0%B0%D1%88%20%D0%B3%D0%BE%D1%80%D0%BE%D0%B4&street=%D0%92%D0%B0%D1%88%D0%B0%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0&house=1"</code></pre>
+        <pre><code>curl -G "https://power-six-lemon.vercel.app/api/power" \
+  --data-urlencode "city=Ваш город" \
+  --data-urlencode "street=Ваша улица" \
+  --data-urlencode "house=1"</code></pre>
       </section>
     </main>
 
