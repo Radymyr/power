@@ -63,15 +63,14 @@
 
       <section class="card">
         <h3>Пример запроса</h3>
-        <pre><code>curl "https://your-api-domain.example/api/power?city=%D0%92%D0%B0%D1%88%20%D0%B3%D0%BE%D1%80%D0%BE%D0%B4&street=%D0%92%D0%B0%D1%88%D0%B0%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0&house=1"</code></pre>
+        <pre><code>curl "https://&lt;your-vercel-app&gt;.vercel.app/api/power?city=%D0%92%D0%B0%D1%88%20%D0%B3%D0%BE%D1%80%D0%BE%D0%B4&street=%D0%92%D0%B0%D1%88%D0%B0%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0&house=1"</code></pre>
       </section>
     </main>
 
     <footer>
       <div class="container">
         <small>
-          Если API хостится отдельно (например Vercel), обновите server URL в
-          <code>openapi.yaml</code>.
+          Swagger/ReDoc используют текущий Vercel-домен автоматически.
         </small>
       </div>
     </footer>

@@ -52,16 +52,20 @@ GET /api/power?city=Ваш%20город&street=Ваша%20улица&house=1
 - `npm run typecheck` — проверка TypeScript
 - `npm test` — запуск тестов
 
-## Деплой лендинга (GitHub + Cloudflare Pages)
+## Деплой на Vercel
 
-См. пошаговую инструкцию: [docs/cloudflare-pages.md](docs/cloudflare-pages.md)
+1. Импортируйте репозиторий в Vercel.
+2. Оставьте стандартные настройки проекта.
+3. Убедитесь, что в репозитории есть `vercel.json` (роутит `/`, `/swagger`, `/redoc`, `/openapi.yaml`).
+4. Нажмите `Deploy`.
 
-Коротко:
+После деплоя на `https://<your-vercel-app>.vercel.app` будут доступны:
 
-- Подключаете репозиторий в Cloudflare Pages
-- `Framework preset`: `None`
-- `Build output directory`: `site`
-- `Build command`: пусто
+- `/` — лендинг
+- `/swagger` — Swagger UI
+- `/redoc` — ReDoc
+- `/openapi.yaml` — OpenAPI
+- `/api/power` — API endpoint
 
 ## Примечания по качеству
 

@@ -6,8 +6,8 @@ info:
     API для получения информации о плановых и фактических отключениях электроэнергии от DTEK.
     Основной сценарий: получить `current_status` по адресу и использовать в Siri/Shortcuts.
 servers:
-  - url: https://your-api-domain.example
-    description: Production API (replace with your real host)
+  - url: /
+    description: Current Vercel deployment host
 paths:
   /api/power:
     get:
