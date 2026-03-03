@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: Project Power API
+  version: 1.0.0
+  description: |
+    API для получения информации о плановых и фактических отключениях электроэнергии от DTEK.
+    Основной сценарий: получить `current_status` по адресу и использовать в Siri/Shortcuts.
+servers:
+  - url: https://your-api-domain.example
+    description: Production API (replace with your real host)
+paths:
+  /api/power:
+    get:
+      summary: Получить статус по адресу
+      operationId: getPowerStatus
+      parameters:
+        - in: query
+          name: city
+          required: false
+          schema:
+            type: string
+            default: м. Кам’янське
+          description: Название города
+        - in: query
+          name: street
+          required: false
+          schema:
+            type: string
+            default: вул. Архітектурна
+          description: Название улицы
+        - in: query
+          name: house
+          required: true
+          schema:
+            type: string
+            example: "22"
+          description: Номер дома
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PowerResponse'
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    address: "м. Кам’янське, вул. Архітектурна, 22"
+                    now: "03.03.2026, 20:30:10"
+                    outages: {}
+                    sub_type_reason: "GPV2.1"
+                    fact_day_key: "1768428000"
+                    current_status:
+                      has_power: false
+                      next_off: null
+                      next_on: "00:30"
+        '400':
+          description: Ошибка валидации параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingHouse:
+                  value:
+                    ok: false
+                    error: "Потрібно вказати номер будинку (house), інакше неможливо точно визначити графік"
+        '500':
+          description: Ошибка провайдера или внутренний сбой
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                upstream:
+                  value:
+                    ok: false
+                    error: Failed to fetch DTEK data
+                    details: CSRF token not found after waiting
+components:
+  schemas:
+    PowerStatus:
+      type: object
+      properties:
+        has_power:
+          type: boolean
+          nullable: true
+        next_off:
+          type: string
+          nullable: true
+          description: HH:MM
+          example: "00:30"
+        next_on:
+          type: string
+          nullable: true
+          description: HH:MM
+          example: "05:00"
+      required: [has_power, next_off, next_on]
+    PowerResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        address:
+          type: string
+        now:
+          type: string
+        outages:
+          type: object
+          additionalProperties: true
+        sub_type_reason:
+          type: string
+          nullable: true
+        fact_day_key:
+          type: string
+          nullable: true
+        current_status:
+          $ref: '#/components/schemas/PowerStatus'
+      required: [ok, address, now, outages, sub_type_reason, fact_day_key, current_status]
+    ErrorResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          nullable: true
+          example: false
+        error:
+          type: string
+        details:
+          type: string
+      required: [error]

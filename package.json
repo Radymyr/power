@@ -1,0 +1,22 @@
+{
+  "name": "project_power",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./api/power.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sparticuz/chromium": "^143.0.0",
+    "playwright-core": "^1.57.0",
+    "vercel": "^50.4.10"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "prettier": "^3.7.4",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

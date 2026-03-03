@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Power API</title>
+    <meta
+      name="description"
+      content="Project Power API: проверка отключений света DTEK. Документация, Swagger и ReDoc."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="brand">PROJECT POWER API</div>
+      </div>
+    </header>
+
+    <main class="container hero">
+      <h1>Публичная документация API отключений света</h1>
+      <p>
+        Готовый лендинг для использования API в Siri/Shortcuts, мобильных клиентах и
+        интеграциях. Здесь есть OpenAPI спецификация и два интерфейса документации:
+        Swagger UI и ReDoc.
+      </p>
+
+      <div class="actions">
+        <a class="button primary" href="/swagger">Открыть Swagger UI</a>
+        <a class="button ghost" href="/redoc">Открыть ReDoc</a>
+        <a class="button ghost" href="/openapi.yaml">Скачать OpenAPI YAML</a>
+      </div>
+
+      <section class="grid" aria-label="api overview">
+        <article class="card">
+          <h3>Endpoint</h3>
+          <p><code>GET /api/power?city=...&street=...&house=...</code></p>
+          <small><code>house</code> обязателен.</small>
+        </article>
+
+        <article class="card">
+          <h3>Ключевая цель</h3>
+          <p>
+            Вернуть <code>current_status</code> с полями
+            <code>has_power</code>, <code>next_off</code>, <code>next_on</code>.
+          </p>
+        </article>
+
+        <article class="card">
+          <h3>Проблема 00:00 решена</h3>
+          <p>
+            Логика расчета статуса учитывает переход через полночь и корректно
+            показывает время следующего включения/отключения.
+          </p>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Пример запроса</h3>
+        <pre><code>curl "https://your-api-domain.example/api/power?city=%D0%BC.%20%D0%9A%D0%B0%D0%BC%E2%80%99%D1%8F%D0%BD%D1%81%D1%8C%D0%BA%D0%B5&street=%D0%B2%D1%83%D0%BB.%20%D0%90%D1%80%D1%85%D1%96%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%BD%D0%B0&house=22"</code></pre>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <small>
+          Если API хостится отдельно (например Vercel), обновите server URL в
+          <code>openapi.yaml</code>.
+        </small>
+      </div>
+    </footer>
+  </body>
+</html>
