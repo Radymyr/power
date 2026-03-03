@@ -2,6 +2,13 @@
 
 API для получения информации о плановых и фактических отключениях электроэнергии от DTEK по адресу.
 
+## Онлайн документация
+
+- Лендинг: `https://power-six-lemon.vercel.app/`
+- Swagger UI: `https://power-six-lemon.vercel.app/swagger`
+- ReDoc: `https://power-six-lemon.vercel.app/redoc`
+- OpenAPI YAML: `https://power-six-lemon.vercel.app/openapi.yaml`
+
 ## Что внутри
 
 - Backend API на TypeScript (`api/`, `src/`)
