@@ -19,21 +19,21 @@ paths:
           required: false
           schema:
             type: string
-            default: м. Кам’янське
+            default: Ваш город
           description: Название города
         - in: query
           name: street
           required: false
           schema:
             type: string
-            default: вул. Архітектурна
+            default: Ваша улица
           description: Название улицы
         - in: query
           name: house
           required: true
           schema:
             type: string
-            example: "22"
+            example: "1"
           description: Номер дома
       responses:
         '200':
@@ -46,7 +46,7 @@ paths:
                 ok:
                   value:
                     ok: true
-                    address: "м. Кам’янське, вул. Архітектурна, 22"
+                    address: "Ваш город, Ваша улица, 1"
                     now: "03.03.2026, 20:30:10"
                     outages: {}
                     sub_type_reason: "GPV2.1"
