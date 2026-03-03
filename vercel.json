@@ -1,28 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/site/index.html"
-    },
-    {
-      "source": "/swagger",
-      "destination": "/site/swagger.html"
-    },
-    {
-      "source": "/redoc",
-      "destination": "/site/redoc.html"
-    },
-    {
-      "source": "/openapi.yaml",
-      "destination": "/site/openapi.yaml"
-    },
-    {
-      "source": "/assets/(.*)",
-      "destination": "/site/assets/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/openapi.yaml",

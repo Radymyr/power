@@ -2,20 +2,80 @@ import { fetchDtekData } from "../src/dtek-client.js";
 import { resolveActualFactDay } from "../src/fact.js";
 import { getCurrentPowerStatus } from "../src/power-status.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import type { FactDay } from "../src/types.js";
 
-const DEFAULT_CITY = "м. Кам’янське";
-const DEFAULT_STREET = "вул. Архітектурна";
+const DEFAULT_CITY = "Ваш город";
+const DEFAULT_STREET = "Ваша улица";
 const KYIV_TIMEZONE = "Europe/Kyiv";
 
 function getHouseData(
-  data: Record<string, unknown>,
+  data: unknown,
   house: string,
 ): Record<string, unknown> {
-  const match = data[house];
+  if (!data || typeof data !== "object") {
+    return {};
+  }
+
+  const safeData = data as Record<string, unknown>;
+  const match = safeData[house];
   if (match && typeof match === "object") {
     return match as Record<string, unknown>;
   }
+
+  // Fallback: if API returns a single object instead of map by house.
+  if (safeData.sub_type_reason && typeof safeData.sub_type_reason === "object") {
+    return safeData;
+  }
+
   return {};
+}
+
+function normalizeReason(reason: string): string[] {
+  const trimmed = reason.trim();
+  const variants = new Set<string>([trimmed]);
+  if (trimmed.includes(".")) {
+    variants.add(trimmed.replaceAll(".", "_"));
+  }
+  if (trimmed.includes("_")) {
+    variants.add(trimmed.replaceAll("_", "."));
+  }
+
+  return Array.from(variants);
+}
+
+function extractSubTypeReason(outages: Record<string, unknown>): string | null {
+  const raw = outages.sub_type_reason;
+  if (!Array.isArray(raw) || typeof raw[0] !== "string") {
+    return null;
+  }
+  return raw[0];
+}
+
+function resolvePowerStatus(
+  factDay: FactDay,
+  subTypeReason: string | null,
+): { has_power: boolean | null; next_off: string | null; next_on: string | null } {
+  if (!subTypeReason) {
+    return { has_power: null, next_off: null, next_on: null };
+  }
+
+  for (const reason of normalizeReason(subTypeReason)) {
+    const status = getCurrentPowerStatus(factDay, {
+      now: new Date(),
+      timeZone: KYIV_TIMEZONE,
+      typeReason: reason,
+    });
+
+    if (status.has_power !== null || status.next_off !== null || status.next_on !== null) {
+      return status;
+    }
+  }
+
+  return { has_power: null, next_off: null, next_on: null };
+}
+
+function isValidDtekPayload(data: unknown): data is { data: unknown; fact?: { data?: unknown } } {
+  return !!data && typeof data === "object" && "data" in data;
 }
 
 export default async function handler(
@@ -46,24 +106,23 @@ export default async function handler(
 
   try {
     const data = await fetchDtekData({ city, street });
-    const outages = getHouseData(data.data, house);
-    const subTypeReason = Array.isArray(outages.sub_type_reason)
-      ? outages.sub_type_reason[0]
-      : null;
+    if (!isValidDtekPayload(data)) {
+      res.status(502).json({
+        ok: false,
+        error: "Invalid DTEK payload",
+        details: "Response structure does not contain data field",
+      });
+      return;
+    }
 
+    const outages = getHouseData(data.data, house);
+    const subTypeReason = extractSubTypeReason(outages);
     const resolvedFact = resolveActualFactDay(
       data.fact?.data,
       new Date(),
       KYIV_TIMEZONE,
     );
-    const powerStatus =
-      typeof subTypeReason === "string" && subTypeReason.length > 0
-        ? getCurrentPowerStatus(resolvedFact.day, {
-            now: new Date(),
-            timeZone: KYIV_TIMEZONE,
-            typeReason: subTypeReason,
-          })
-        : { has_power: null, next_off: null, next_on: null };
+    const powerStatus = resolvePowerStatus(resolvedFact.day, subTypeReason);
 
     res.status(200).json({
       ok: true,

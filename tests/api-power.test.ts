@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import handler from "../api/power.js";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { fetchDtekData } from "../src/dtek-client.js";
 
 vi.mock("../src/dtek-client.js", () => ({
   fetchDtekData: vi.fn(async () => ({
@@ -21,6 +22,8 @@ vi.mock("../src/dtek-client.js", () => ({
     },
   })),
 }));
+
+const mockedFetchDtekData = vi.mocked(fetchDtekData);
 
 function createMockResponse() {
   const payload: { statusCode: number | null; body: unknown } = {
@@ -46,6 +49,24 @@ describe("api/power handler", () => {
   it("returns status with next_on for midnight boundary scenario", async () => {
     vi.useFakeTimers();
     try {
+      mockedFetchDtekData.mockResolvedValueOnce({
+        data: {
+          "22": {
+            sub_type_reason: ["GPV2.1"],
+          },
+        },
+        fact: {
+          data: {
+            "1768428000": {
+              "GPV2.1": {
+                "1": "first",
+                "24": "no",
+              },
+            },
+          },
+        },
+      } as Awaited<ReturnType<typeof fetchDtekData>>);
+
       vi.setSystemTime(new Date("2026-01-15T21:50:00.000Z")); // 23:50 Kyiv
 
       const req = {
@@ -90,5 +111,28 @@ describe("api/power handler", () => {
       ok: false,
     });
     expect(payload.body).toHaveProperty("error");
+  });
+
+  it("returns 502 when upstream payload is invalid", async () => {
+    mockedFetchDtekData.mockResolvedValueOnce({} as Awaited<
+      ReturnType<typeof fetchDtekData>
+    >);
+
+    const req = {
+      query: {
+        city: "Ваш город",
+        street: "Ваша улица",
+        house: "1",
+      },
+    } as unknown as VercelRequest;
+
+    const { res, payload } = createMockResponse();
+    await handler(req, res);
+
+    expect(payload.statusCode).toBe(502);
+    expect(payload.body).toMatchObject({
+      ok: false,
+      error: "Invalid DTEK payload",
+    });
   });
 });
