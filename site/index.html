@@ -62,9 +62,14 @@
       </section>
 
       <section class="card">
-        <h3>Быстрый старт</h3>
+        <div class="quickstart-head">
+          <h3>Быстрый старт</h3>
+          <button class="button ghost copy-btn" id="copy-curl" type="button">
+            Копировать
+          </button>
+        </div>
         <p>1) Откройте Swagger. 2) Введите <code>city</code>, <code>street</code>, <code>house</code>. 3) Нажмите <code>Execute</code>.</p>
-        <pre><code>curl -G "https://power-six-lemon.vercel.app/api/power" \
+        <pre><code id="curl-snippet">curl -G "https://power-six-lemon.vercel.app/api/power" \
   --data-urlencode "city=Ваш город" \
   --data-urlencode "street=Ваша улица" \
   --data-urlencode "house=1"</code></pre>
@@ -79,5 +84,25 @@
         </small>
       </div>
     </footer>
+    <script>
+      const copyButton = document.getElementById("copy-curl");
+      const curlSnippet = document.getElementById("curl-snippet");
+      if (copyButton && curlSnippet) {
+        copyButton.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(curlSnippet.textContent || "");
+            copyButton.textContent = "Скопировано";
+            setTimeout(() => {
+              copyButton.textContent = "Копировать";
+            }, 1400);
+          } catch {
+            copyButton.textContent = "Ошибка";
+            setTimeout(() => {
+              copyButton.textContent = "Копировать";
+            }, 1400);
+          }
+        });
+      }
+    </script>
   </body>
 </html>
