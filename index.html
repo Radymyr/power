@@ -90,7 +90,12 @@
       if (copyButton && curlSnippet) {
         copyButton.addEventListener("click", async () => {
           try {
-            await navigator.clipboard.writeText(curlSnippet.textContent || "");
+            const raw = curlSnippet.textContent || "";
+            const normalized = raw
+              .replace(/\\\s*\n\s*/g, " ")
+              .replace(/\s+/g, " ")
+              .trim();
+            await navigator.clipboard.writeText(normalized);
             copyButton.textContent = "Скопировано";
             setTimeout(() => {
               copyButton.textContent = "Копировать";
